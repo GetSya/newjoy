@@ -130,6 +130,8 @@ const spotsearch = new spotapi({
     }
 })
 
+
+
 ///SETTING MEM LIMIT
 const memberlimit = 1
 const spotdl = require('spotifydl-core').default
@@ -2528,7 +2530,7 @@ Dirasakan : *${gempa.Infogempa.gempa.Dirasakan}*`
                 limitAdd(sender, limit)
             }
                 break;
-            case 'swm': case 'steal': case 'stickerwm': case 'take': {
+            case 'swm': case 'wm': case 'steal': case 'stickerwm': case 'take': {
                 if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
                 if (!args.join(" ")) return reply(`Where is the text?`)
                 const swn = args.join(" ")
@@ -4821,7 +4823,7 @@ break;
 
         // 3. Kirim QRIS ke User
         const sQris = await client.sendMessage(m.chat, {
-            image: { url: `https://quickchart.io/qr?text=${encodeURIComponent(cqris.payment_number)}` },
+            image: { url: `https://api-faa.my.id/faa/qr-create?text=${encodeURIComponent(cqris.payment_number)}` },
             caption: caption
         }, { quoted: m });
 
