@@ -375,22 +375,17 @@ module.exports = client = async (client, m, chatUpdate, store) => {
         const jam = moment.tz('asia/jakarta').format('HH:mm:ss')
         const tgl = moment.tz('Asia/Jakarta').format('DD/MM/YY')
         //group
-        // Gunakan optional chaining ?. agar tidak crash jika data kosong
         const isGroup = m.key.remoteJid.endsWith('@g.us')
-        const groupMetadata = isGroup ? (await client.groupMetadata(m.chat).catch(() => null)) : null
-
-        if (isGroup && groupMetadata) {
-            const participants = groupMetadata.participants || []
-            const botNumber = client.user.id.split(':')[0] + '@s.whatsapp.net'
-            
-            // Cari user dan bot sekaligus dalam satu pencarian
-            const user = participants.find(p => p.id === m.sender)
-            const bot = participants.find(p => p.id === botNumber)
-
-            const isAdmin = user?.admin !== undefined // admin atau superadmin
-            const isBotAdmin = bot?.admin !== undefined
-            const isOwner = groupMetadata.owner === m.sender || user?.admin === 'superadmin'
-        }
+        const groupMetadata = m.isGroup ? await client.groupMetadata(m.chat).catch(e => { }) : ''
+        const groupName = m.isGroup ? groupMetadata.subject : ''
+        const participants = m.isGroup ? await groupMetadata.participants : ''
+        const groupAdmins = m.isGroup ? await getGroupAdmins(participants) : ''
+        const isGroupAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false
+        const isBotAdmins = m.isGroup ? groupAdmins.includes(botNumber) : false
+        const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false
+        const groupOwner = m.isGroup ? groupMetadata.owner : ''
+        const isGroupOwner = m.isGroup ? (groupOwner ? groupOwner : groupAdmins).includes(m.sender) : false
+        const AntiNsfw = m.isGroup ? ntnsfw.includes(from) : false
         //anti media
         const isXeonMedia = m.mtype
         //user status
