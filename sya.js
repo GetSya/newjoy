@@ -25,6 +25,7 @@ var Photooxy = require('@sl-code-lords/photooxy')
 var photooxy = new Photooxy()
 const { color } = require('./lib/color')
 const chalk = require('chalk')
+const qrcode = require('qrcode')
 const moment = require('moment-timezone')
 const { isLimit, limitAdd, getLimit, giveLimit, addBalance, kurangBalance, getBalance, isGame, gameAdd, givegame, cekGLimit } = require("./lib/limit.js");
 const cron = require('node-cron')
@@ -135,6 +136,11 @@ const spotdl = require('spotifydl-core').default
 const credentials = {
     clientId: '271f6e790fb943cdb34679a4adcc34cc',
     clientSecret: 'c009525564304209b7d8b705c28fd294'
+}
+const pakasir = {
+  slug: 'acamedia',
+  apikey: 'ZU0JBrZtUZSqI8nAqz73zbtgJFtj0tY5',
+  expired: 30 // menit
 }
 const VoiceNoteXeon = JSON.parse(fs.readFileSync('./media/database/xeonvn.json'))
 const StickerXeon = JSON.parse(fs.readFileSync('./media/database/xeonsticker.json'))
@@ -1407,7 +1413,7 @@ async function pinterest(query) {
     })
 }
 async function tiktok(url) {
-    var tete = await fetchJson(`https://api.vreden.my.id/api/tiktok?url=${url}`)
+    var tete = await fetchJson(`https://api-faa.my.id/faa/tiktok?url=${url}`)
     return tete
 }
 async function youtube(url, type) {
@@ -1705,6 +1711,38 @@ click https://wa.me/${botNumber.split`@`[0]}`, m, { mentions: [roof.p, roof.p2] 
             xeonverifieduser.push(sender)
             fs.writeFileSync('./src/data/role/user.json', JSON.stringify(xeonverifieduser, null, 2))
         }
+function generateOrderId(sender) {
+  return `ORD-${Date.now()}-${sender.split('@')[0]}`
+}
+
+async function checkStatus(project, apikey, orderId, amount) {
+  const res = await axios.get(
+    `https://app.pakasir.com/api/transactiondetail?project=${project}&amount=${amount}&order_id=${orderId}&api_key=${apikey}`
+  )
+  return res.data.transaction
+}
+
+
+async function createQris(project, apikey, amount) {
+  const res = await axios.post(
+    'https://app.pakasir.com/api/transactioncreate/qris',
+    {
+      project,
+      order_id: 'BOT-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
+      amount,
+      api_key: apikey
+    },
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+
+  if (!res.data?.payment) {
+    throw new Error('Gagal membuat QRIS')
+  }
+
+  return res.data.payment
+}
+
+
 
         switch (isCommand) {
             case 'menu': {
@@ -2002,6 +2040,19 @@ Dirasakan : *${gempa.Infogempa.gempa.Dirasakan}*`
                 limitAdd(sender, limit)
             }
                 break
+                case 'editimg': case 'editing':{
+                    if (!isPremium) return reply(`hanya digunakan untuk pengguna premium`)
+                    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
+                        if (!text) return reply(`Kirim perintah dengan teks\nExample: ${prefix + command} ganti rambutnya menjadi botak`)
+                            if (!/image/.test(mime)) return reply(`Send/Reply Image Caption Caption ${prefix + command}`)
+                                await stikertunggu()
+                            let media = await client.downloadAndSaveMediaMessage(qmsg)
+                    let anu = await UploadFileUgu(media)
+                    var data = await getBuffer(`https://api-faa.my.id/faa/editfoto?url=${anu.url}&prompt=${text}`)
+                    client.sendMessage(m.chat, {image: data, caption: `Sukses`}, {quoted: m})
+                    limitAdd(sender, limit)
+                }
+                break
             case 'tourl': {
                 await stikertunggu()
                 let media = await client.downloadAndSaveMediaMessage(qmsg)
@@ -2175,8 +2226,6 @@ Dirasakan : *${gempa.Infogempa.gempa.Dirasakan}*`
                     case 'toqr': {
                         if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
                             if (!q) return reply(' Please include link or text!')
-                                const QrCode = require('qrcode-reader')
-                            const qrcode = require('qrcode')
                             let qyuer = await qrcode.toDataURL(q, { scale: 35 })
                             let data = new Buffer.from(qyuer.replace('data:image/png;base64,', ''), 'base64')
                             let buff = getRandom('.jpg')
@@ -2187,6 +2236,7 @@ Dirasakan : *${gempa.Infogempa.gempa.Dirasakan}*`
                             limitAdd(sender, limit)
                         }
                         break
+
                         case 'volaudio': {
                             if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
                                 if (!args.join(" ")) return reply(`Example: ${prefix + command} 10`)
@@ -4156,7 +4206,7 @@ Please @${m.mentionedJid[0].split`@`[0]} to type accept/reject`
                     reply(`Poin : ${isPremium ? 'Unlimited' : limitPrib}\nUang : $${getBalance(sender, balance)}\n\nKamu dapat membeli Poin dengan ${prefix}buypoin`)
                 }
 				break
-                /*
+                
                 case 'jodoh': case 'cekjodoh': case 'search-jodoh':{
                     if (m.isGroup) return reply(`Hanya bisa digunakan di private message`)
                     var teman2 = pickRandom(xeonverifieduser)
@@ -4278,7 +4328,7 @@ Please @${m.mentionedJid[0].split`@`[0]} to type accept/reject`
                     var data3 = q.split("|")[2]
                     client.sendMessage(data1, {text: `Maaf teman kamu menolak buat kirim kontak.`})
                     }
-                    break*/
+                    break
             case 'afk': {
                 let user = global.db.data.users[m.sender]
                 user.afkTime = + new Date
@@ -4296,218 +4346,29 @@ Please @${m.mentionedJid[0].split`@`[0]} to type accept/reject`
             case 'lagu': {
                 if (!text) return reply(`Example : ${prefix + command} story wa anime`)
                 await stikertunggu()
-                if (!q) return reply(`Example : ${prefix + command} Rayuan Perempuan Gila`)
-                var data = await fetchJson(`https://weeb-api.vercel.app/genius?query=${text}`)
-                var isi = data[0].url
-                var data2 = await fetchJson(`https://weeb-api.vercel.app/lyrics?url=${isi}`)
-                var tekss = data2
-                reply(tekss)
+            var data = await fetchJson(`https://api-faa.my.id/faa/lyrics?q=${text}`)
+            var teks = `[ LIRIK LAGU ]\n\nJudul: ${data.result.title}\nAlbum: ${data.result.album}\n\n` + monospace(data.result.lyrics)
 
             }
                 break
-                /*
+            
             case 'remini': case 'tohd': {
                 if (!/image/.test(mime)) return reply(`Send/Reply Gambar that you want to make into audio with captions ${prefix + command}`)
                 await stikertunggu()
                 let media = await client.downloadAndSaveMediaMessage(qmsg)
                 if (/image/.test(mime)) {
                     if (db.data.users[sender].limit < 1) return reply(mess.limit)
-                    var anu = await TelegraPh(media)
-                    var data = await fetchJson(`https://aemt.me/remini?url=${anu}&resolusi=4`)
+                    var anu = await UploadFileUgu(media)
+                    var data = await fetchJson(`https://api-faa.my.id/faa/hdv2?url=${anu.url}`)
                     client.sendMessage(m.chat, { image: { url: data.url }, caption: `Sukses` }, { quoted: m })
                 }
             }
-                break*/
             case 'igstalk': {
                 if (!q) return reply(`📌Example: ${prefix + command} arsrfii\NOTED : Tidak Menggunakan "@"`)
                 if (!q === "@") return reply(`Gausah Pake "@"`)
                 var data = await fetchJson(`https://aemt.me/download/igstalk?username=${q}`)
                 var tekss = `*[ INSTAGRAM STALKER ]*\n\nUsername : ${data.result.username}\nFull Name : ${data.result.fullname}\nBio : ${data.result.bio}\nFollowers : ${data.result.followers}\nFollowing : ${data.result.following}\nPostingan Akun : ${data.result.postsCount}\n\n_Follow ig owner : @arsrfii_`
                 client.sendMessage(m.chat, { image: { url: data.result.photoUrl }, caption: tekss }, { quoted: m })
-            }
-                break
-            case 'qc': {
-                if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
-                    if (!q) return reply(`📌Example: ${prefix + command} pink hallo\n\n꒰ 🖌️ Color List ꒱ ೄྀ࿐ ˊˎ-\n━━━━━━⊱⋆⊰━━━━━━\npink\nblue\nred\ngreen\nyellow\npurple\ndarkblue\nlightblue\nash\norange\nblack\nwhite\nteal\nlightpink\nchocolate\nsalmon\nmagenta\ntan\nwheat\ndeeppink\nfire\nskyblue\nsafron\nbrightskyblue\nhotpink\nlightskyblue\nseagreen\ndarkred\norangered\ncyan\nviolet\nmossgreen\ndarkgreen\nnavyblue\ndarkorange\ndarkpurple\nfuchsia\ndarkmagenta\ndarkgray\npeachpuff\nblackishgreen\ndarkishred\ngoldenrod\ndarkishgray\ndarkishpurple\ngold\nsilver`)
-                        if (text.length > 100) return reply(`Max 100 character.`)
-                            let [color, ...message] = text.split(' ');
-                        message = message.join(' ');
-                        let backgroundColor;
-                switch (color) {
-                    case 'pink':
-                        backgroundColor = '#f68ac9';
-                        break;
-                    case 'blue':
-                        backgroundColor = '#6cace4';
-                        break;
-                    case 'red':
-                        backgroundColor = '#f44336';
-                        break;
-                    case 'green':
-                        backgroundColor = '#4caf50';
-                        break;
-                    case 'yellow':
-                        backgroundColor = '#ffeb3b';
-                        break;
-                    case 'purple':
-                        backgroundColor = '#9c27b0';
-                        break;
-                    case 'darkblue':
-                        backgroundColor = '#0d47a1';
-                        break;
-                    case 'lightblue':
-                        backgroundColor = '#03a9f4';
-                        break;
-                    case 'ash':
-                        backgroundColor = '#9e9e9e';
-                        break;
-                    case 'orange':
-                        backgroundColor = '#ff9800';
-                        break;
-                    case 'black':
-                        backgroundColor = '#000000';
-                        break;
-                    case 'white':
-                        backgroundColor = '#ffffff';
-                        break;
-                    case 'teal':
-                        backgroundColor = '#008080';
-                        break;
-                    case 'lightpink':
-                        backgroundColor = '#FFC0CB';
-                        break;
-                    case 'chocolate':
-                        backgroundColor = '#A52A2A';
-                    case 'salmon':
-                        backgroundColor = '#FFA07A';
-                        break;
-                    case 'magenta':
-                        backgroundColor = '#FF00FF';
-                        break;
-                    case 'tan':
-                        backgroundColor = '#D2B48C';
-                        break;
-                    case 'wheat':
-                        backgroundColor = '#F5DEB3';
-                        break;
-                    case 'deeppink':
-                        backgroundColor = '#FF1493';
-                        break;
-                    case 'fire':
-                        backgroundColor = '#B22222';
-                        break;
-                    case 'skyblue':
-                        backgroundColor = '#00BFFF';
-                        break;
-                    case 'orange':
-                        backgroundColor = '#FF7F50';
-                        break;
-                    case 'brightskyblue':
-                        backgroundColor = '#1E90FF';
-                        break;
-                    case 'hotpink':
-                        backgroundColor = '#FF69B4';
-                        break;
-                    case 'lightskyblue':
-                        backgroundColor = '#87CEEB';
-                        break;
-                    case 'seagreen':
-                        backgroundColor = '#20B2AA';
-                        break;
-                    case 'darkred':
-                        backgroundColor = '#8B0000';
-                        break;
-                    case 'orangered':
-                        backgroundColor = '#FF4500';
-                        break;
-                    case 'cyan':
-                        backgroundColor = '#48D1CC';
-                        break;
-                    case 'violet':
-                        backgroundColor = '#BA55D3';
-                        break;
-                    case 'mossgreen':
-                        backgroundColor = '#00FF7F';
-                        break;
-                    case 'darkgreen':
-                        backgroundColor = '#008000';
-                        break;
-                    case 'navyblue':
-                        backgroundColor = '#191970';
-                        break;
-                    case 'darkorange':
-                        backgroundColor = '#FF8C00';
-                        break;
-                    case 'darkpurple':
-                        backgroundColor = '#9400D3';
-                        break;
-                    case 'fuchsia':
-                        backgroundColor = '#FF00FF';
-                        break;
-                    case 'darkmagenta':
-                        backgroundColor = '#8B008B';
-                        break;
-                    case 'darkgray':
-                        backgroundColor = '#2F4F4F';
-                        break;
-                    case 'peachpuff':
-                        backgroundColor = '#FFDAB9';
-                        break;
-                    case 'darkishgreen':
-                        backgroundColor = '#BDB76B';
-                        break;
-                    case 'darkishred':
-                        backgroundColor = '#DC143C';
-                        break;
-                    case 'goldenrod':
-                        backgroundColor = '#DAA520';
-                        break;
-                    case 'darkishgray':
-                        backgroundColor = '#696969';
-                        break;
-                    case 'darkishpurple':
-                        backgroundColor = '#483D8B';
-                        break;
-                    case 'gold':
-                        backgroundColor = '#FFD700';
-                        break;
-                    case 'silver':
-                        backgroundColor = '#C0C0C0';
-                        break;
-                    default:
-                        return reply(`The selected color is not available.\nExample : ${prefix}${command} silver Jo?`)
-                }
-                let obj = {
-                    type: 'quote',
-                    format: 'png',
-                    backgroundColor,
-                    width: 512,
-                    height: 768,
-                    scale: 2,
-                    messages: [
-                        {
-                            entities: [],
-                            avatar: true,
-                            from: {
-                                id: 1,
-                                name: pushname,
-                                photo: {
-                                    url: await client.profilePictureUrl(m.sender, "image").catch(() => 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60'),
-                                }
-                            },
-                            text: message,
-                            replyMessage: {},
-                        },
-                    ],
-                };
-                let response = await axios.post('https://bot.lyo.su/quote/generate', obj, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                let buffer = Buffer.from(response.data.result.image, 'base64');
-                client.sendImageAsSticker(m.chat, buffer, m, { packname: `${global.packname}`, author: `${global.author}` })
-                limitAdd(sender, limit)
             }
                 break
             case 'ephemeral': case 'timerpesan': {
@@ -4649,8 +4510,8 @@ Please @${m.mentionedJid[0].split`@`[0]} to type accept/reject`
                 var capts = `*[ PLAY YOUTUBE ]*\n\nJudul : ${judul}\nLink : ${urln}\nDeskripsi : ${desc}`
                 client.sendMessage(m.chat, {image: {url: thumbnailnya}, caption:capts})
                 try {
-                    var data_url = await fetchJson(`https://api.vreden.web.id/api/ytmp3?url=${urln}`)
-                    client.sendMessage(m.chat, {audio: {url: data_url.result.download.url}, mimetype: 'audio/mp4'}, {quoted: m})
+                    var data_url = await fetchJson(`https://api-faa.my.id/faa/ytmp3?url=${urln}`)
+                    client.sendMessage(m.chat, {audio: {url: data_url.result.mp3}, mimetype: 'audio/mp4'}, {quoted: m})
                 } catch (e) {
                     console.error(e);
                     m.reply("Terjadi kesalahan saat mencari di YouTube.");
@@ -4658,11 +4519,18 @@ Please @${m.mentionedJid[0].split`@`[0]} to type accept/reject`
                 limitAdd(sender, limit)
             }
                 break;
+                case 'iqc':{
+                if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
+                    await stikertunggu()
+                var data = await getBuffer(`https://api-faa.my.id/faa/iqcv2?prompt=${text}&jam=${jam}&batre=100`)
+                client.sendMessage(m.chat, {image: data, caption: `Anjay`}, {quoted: m})
+                break
+                }
             case 'brat': case 'ttp':{
                 if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
                     if (m.isGroup) return reply(`Fitur ${command} Hanya Bisa Di Gunakan di Private Message`)
                         if (!q) return reply(`*<!> Example:* ${command} aku gantenk`)
-                    var urls = await getBuffer(`https://brat.caliphdev.com/api/brat?text=${text}`)
+                    var urls = await getBuffer(`https://api-faa.my.id/faa/brat?text=${text}`)
                     client.sendImageAsSticker(m.chat, urls, m, { packname: global.packname, author: pushname })
                 if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Poin kamu sudah habis silahkan kirim ${prefix}poin untuk mengecek poin`)
                     limitAdd(sender, limit)
@@ -4898,6 +4766,99 @@ break;
                     limitAdd(sender, limit)
                     break
             /// OWNER
+
+            case 'buyprem': {
+    // Data Pakasir yang kamu berikan
+    const pakasir = {
+        slug: 'acamedia',
+        apikey: 'ZU0JBrZtUZSqI8nAqz73zbtgJFtj0tY5',
+        expired: 30 // menit
+    };
+
+    let who = m.sender.replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+    let harganya = 2000;
+
+    // Pastikan database user ada
+    if (!global.db.data.users[who]) {
+        global.db.data.users[who] = {
+            name: pushname || 'Unknown',
+            limit: 10,
+            exp: 0,
+            level: 0,
+            register: false,
+            premium: false,
+            premiumTime: 0
+        };
+    }
+    let user = global.db.data.users[who];
+
+    // Validasi nominal
+    if (harganya < 1000) return reply('Minimal 1.000 ya.');
+    
+    try {
+        // 1. Buat QRIS
+        const cqris = await createQris(pakasir.slug, pakasir.apikey, harganya);
+        
+        // 2. Atur Waktu Expired
+        const expiredAt = new Date(cqris.expired_at);
+        expiredAt.setHours(expiredAt.getHours() - 1);
+        expiredAt.setMinutes(expiredAt.getMinutes() + pakasir.expired);
+        
+        const expiredTime = expiredAt.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'Asia/Jakarta',
+        });
+
+        let total = cqris.total_payment + cqris.fee;
+        let caption = `💳 *QRIS PREMIUM ACAMEDIA*\n\n` +
+                      `🕓 *Expired:* ${expiredTime} WIB (${pakasir.expired} Menit)\n` +
+                      `💸 *Biaya Admin:* Rp${cqris.fee.toLocaleString('id-ID')}\n` +
+                      `💰 *Total Bayar:* *Rp${total.toLocaleString('id-ID')}*\n` +
+                      `📦 *Order ID:* #${cqris.order_id}\n\n` +
+                      `_Silahkan scan QR di atas. Status akan otomatis aktif setelah pembayaran terverifikasi._`;
+
+        // 3. Kirim QRIS ke User
+        const sQris = await client.sendMessage(m.chat, {
+            image: { url: `https://quickchart.io/qr?text=${encodeURIComponent(cqris.payment_number)}` },
+            caption: caption
+        }, { quoted: m });
+
+        // 4. Loop Cek Status (Polling)
+        let terbayar = false;
+        while (!terbayar) {
+            // Cek jika sudah lewat waktu expired
+            if (new Date() >= expiredAt) {
+                await client.sendMessage(m.chat, { delete: sQris.key });
+                return reply('⚠️ Waktu pembayaran habis (Expired). Silakan pesan ulang.');
+            }
+
+            const res = await checkStatus(pakasir.slug, pakasir.apikey, cqris.order_id, harganya);
+            
+            if (res && res.status === 'completed') {
+                terbayar = true;
+                await client.sendMessage(m.chat, { delete: sQris.key });
+                
+                // Update User
+                addPremiumUser(sender, "30d", premium)
+                
+                await reply('✅ *PEMBAYARAN BERHASIL!*\n\nTerima kasih, status Premium kamu sekarang sudah aktif. Ketik /limit untuk cek.');
+                break;
+            }
+
+            // Delay 5 detik agar tidak spam API
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+    } catch (e) {
+        console.error(e);
+        reply('❌ Gagal menghubungi server Pakasir. Coba lagi nanti.');
+    }
+}
+break;
+
+
+
             case 'donasi': case 'donate': {
                 var sewa = `*[ DONASI ]*
     Donasi

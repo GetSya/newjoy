@@ -43,6 +43,10 @@ global.mess = {
     error: 'Error !',
     success: 'Succes •'
 }
+
+
+
+
 //thumbnailf
 global.thumb = fs.readFileSync('./media/theme/cheemspic.jpg')
 

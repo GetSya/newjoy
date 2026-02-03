@@ -5817,7 +5817,7 @@
   },
   {
     "id": "6285814696501@s.whatsapp.net",
-    "limit": 3
+    "limit": 7
   },
   {
     "id": "6285162609021@s.whatsapp.net",
@@ -11626,5 +11626,13 @@
   {
     "id": "6283116781487@s.whatsapp.net",
     "limit": 1
+  },
+  {
+    "id": "6282191674713@s.whatsapp.net",
+    "limit": 1
+  },
+  {
+    "id": "6285709210312@s.whatsapp.net",
+    "limit": 2
   }
 ]
