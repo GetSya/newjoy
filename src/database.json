@@ -1,0 +1,208 @@
+{
+  "sticker": {},
+  "database": {},
+  "game": {
+    "math": []
+  },
+  "others": {
+    "vote": []
+  },
+  "users": {
+    "6288291477960@s.whatsapp.net": {
+      "serialNumber": "dee0fdfd76212edd308ab1b64c5b3e52",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "leta gratata",
+      "premium": false
+    },
+    "6287724130362@s.whatsapp.net": {
+      "serialNumber": "ce89a8e65469e24da17cc8fac809db69",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "y",
+      "premium": "false"
+    },
+    "6283186212735@s.whatsapp.net": {
+      "serialNumber": "3b01834be0801387d404fdef5e9e9bc2",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "Sanzz",
+      "premium": false
+    },
+    "6285759265978@s.whatsapp.net": {
+      "serialNumber": "99aae8fccf4576a22880032d247d6f73",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "Rifki Dwiana",
+      "premium": false
+    },
+    "6288214772441@s.whatsapp.net": {
+      "serialNumber": "826d792e68524ffb02791583b0156998",
+      "title": "Premium",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "Syaaa",
+      "premium": "true"
+    },
+    "6288213292687@s.whatsapp.net": {
+      "serialNumber": "e830ec12f526afcfb35711dc2bfe9235",
+      "title": "Premium",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "Jojo Free Add Grup",
+      "premium": "true"
+    },
+    "6285940744029@s.whatsapp.net": {
+      "serialNumber": "06eb9f99efc65fa6c13c78f518f68563",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "ɱҽყƙα_p̶u̶t̶r̶i̶",
+      "premium": false
+    },
+    "62895700880391@s.whatsapp.net": {
+      "serialNumber": "de154c75e04a667561e97bc88fe81718",
+      "title": "User",
+      "afkTime": -1,
+      "badword": 0,
+      "afkReason": "",
+      "nick": "Hamba",
+      "premium": "false"
+    }
+  },
+  "chats": {
+    "120363414827708099@g.us": {
+      "badword": false,
+      "antiforeignnum": false,
+      "antibot": false,
+      "antiviewonce": false,
+      "antivirtex": false,
+      "antimedia": false,
+      "antiimage": false,
+      "antivideo": false,
+      "antiaudio": false,
+      "antipoll": false,
+      "antisticker": false,
+      "antilocation": false,
+      "antidocument": false,
+      "anticontact": false,
+      "antilink": false,
+      "antilinkgc": false
+    },
+    "120363359169347918@g.us": {
+      "badword": false,
+      "antiforeignnum": false,
+      "antibot": false,
+      "antiviewonce": false,
+      "antivirtex": false,
+      "antimedia": false,
+      "antiimage": false,
+      "antivideo": false,
+      "antiaudio": false,
+      "antipoll": false,
+      "antisticker": false,
+      "antilocation": false,
+      "antidocument": false,
+      "anticontact": false,
+      "antilink": false,
+      "antilinkgc": false
+    },
+    "120363183842805991@g.us": {
+      "badword": false,
+      "antiforeignnum": false,
+      "antibot": false,
+      "antiviewonce": false,
+      "antivirtex": false,
+      "antimedia": false,
+      "antiimage": false,
+      "antivideo": false,
+      "antiaudio": false,
+      "antipoll": false,
+      "antisticker": false,
+      "antilocation": false,
+      "antidocument": false,
+      "anticontact": false,
+      "antilink": false,
+      "antilinkgc": false
+    },
+    "6288214772441@s.whatsapp.net": {
+      "badword": false,
+      "antiforeignnum": false,
+      "antibot": false,
+      "antiviewonce": false,
+      "antivirtex": false,
+      "antimedia": false,
+      "antiimage": false,
+      "antivideo": false,
+      "antiaudio": false,
+      "antipoll": false,
+      "antisticker": false,
+      "antilocation": false,
+      "antidocument": false,
+      "anticontact": false,
+      "antilink": false,
+      "antilinkgc": false
+    },
+    "120363319300178661@g.us": {
+      "badword": false,
+      "antiforeignnum": false,
+      "antibot": false,
+      "antiviewonce": false,
+      "antivirtex": false,
+      "antimedia": false,
+      "antiimage": false,
+      "antivideo": false,
+      "antiaudio": false,
+      "antipoll": false,
+      "antisticker": false,
+      "antilocation": false,
+      "antidocument": false,
+      "anticontact": false,
+      "antilink": false,
+      "antilinkgc": false
+    }
+  },
+  "settings": {
+    "6288213292687@s.whatsapp.net": {
+      "totalhit": 12,
+      "totalError": 0,
+      "online": false,
+      "autosticker": false,
+      "autobio": false,
+      "autoread": true,
+      "autoblocknum": false,
+      "onlyindia": false,
+      "onlyindo": false,
+      "onlygrub": false,
+      "onlypc": false,
+      "autorecordtype": false,
+      "autorecord": false,
+      "autotype": false,
+      "watermark": {
+        "packname": "My Sticker",
+        "author": "Sticker Saya"
+      },
+      "about": {
+        "bot": {
+          "nick": "Jojo Free Add Grup",
+          "alias": "Joy - Assistant"
+        },
+        "owner": {
+          "nick": "+62 882-1477-2441",
+          "alias": "6288214772441"
+        }
+      }
+    }
+  }
+}
